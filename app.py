@@ -4,7 +4,7 @@ import joblib
 import os
 
 # ------------------------------
-# Load models
+# Load models (no imputer)
 # ------------------------------
 BASE_DIR = os.path.dirname(os.path.abspath(__file__))
 
@@ -17,8 +17,6 @@ models = {
     "AdaBoost": load_model("adaboost.pkl"),
     "Voting Classifier": load_model("voting.pkl")
 }
-
-imputer = load_model("imputer.pkl")
 
 # ------------------------------
 # Streamlit UI
@@ -54,11 +52,14 @@ with col2:
 
 # Prediction
 if st.button("Predict"):
+    # Convert inputs to numpy array
     features = np.array([Pregnancies, Glucose, BloodPressure, SkinThickness,
-                         Insulin, BMI, DPF, Age]).reshape(1, -1)
-    features = imputer.transform(features)
+                         Insulin, BMI, DPF, Age], dtype=float).reshape(1, -1)
+
+    # Prediction
     prediction = models[model_choice].predict(features)[0]
 
+    # Show results with colored box
     if prediction == 1:
         st.markdown(
             f"<div style='background-color:#fdecea;padding:15px;border-radius:10px'>"
